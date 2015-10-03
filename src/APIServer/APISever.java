@@ -15,7 +15,6 @@ public class APISever extends Application {
         Router router = new Router(getContext());
 
         // Defines only one route
-        router.attach("/testPing", TestPing.class);
         router.attach("/wave", Text2Wave.class);
         router.attach("/waveResource", File2Wave.class);
 

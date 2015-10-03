@@ -4,7 +4,6 @@ import java.util.Timer;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;
-import Client.PingClient;
 import Client.WaveClient;
 
 public class Main {
@@ -22,9 +21,9 @@ public class Main {
 	    // Start the component.  
 	    component.start();	
 	    
-	    //Delete auto generated .txt and .wav files every 24 hours
+	    //Delete auto generated .txt and .wav files every 1 hour
 	    Timer time = new Timer(); 
-	    time.schedule(new DeleteFile(1, "/Users/jinchen/Desktop/festival/GeneratedWave"), 0, 1000 * 60 * 60 * 24);
+	    time.schedule(new DeleteFile(1, "/Users/jinchen/Desktop/festival/GeneratedWave"), 0, 1000 * 60 * 60 * 1);
 	    
 	    //test Client
 		/*PingClient test = new PingClient();
