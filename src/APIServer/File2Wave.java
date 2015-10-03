@@ -4,31 +4,42 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.rmi.server.UID;
+import java.util.Properties;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.restlet.Request;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
 public class File2Wave extends ServerResource {
-	String errorWave = "/Users/jinchen/Desktop/festival/GeneratedWave/Error.wav";
+	String errorWave = "../WaveSource/Error.wav";
+	String wavePath = "";
+	String festivalHome = "";
+	
+	private void getProperties(){
+		Properties configFile = new Properties();
+		try {
+			configFile.load(getClass().getResourceAsStream("config.properties"));
+			wavePath = configFile.getProperty("waveFilePath");
+			festivalHome = configFile.getProperty("festivalHome");
+		} catch (IOException e) {
+	
+			e.printStackTrace();
+		}
+	}
 	
 	@Post
 	public FileRepresentation accept(Representation entity) throws Exception {
+		getProperties();
 		FileRepresentation result = null;
 	    if (entity != null) {
 	        if (MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(), true)) {
@@ -65,7 +76,7 @@ public class File2Wave extends ServerResource {
 	                    String[] matches = sb.toString().split(" ");
 	                    String match = matches[matches.length-1]; 
 	                    waveFilePath = match.split("\"")[1];
-	                    File newFile = new File("/Users/jinchen/Desktop/festival/GeneratedWave/" + GenerateUid() + ".scm");
+	                    File newFile = new File(wavePath + GenerateUid() + ".scm");
 	                    BufferedWriter out = new BufferedWriter (new FileWriter(newFile));
 	                    out.write(sb.toString());
 	                    out.close();
@@ -86,8 +97,7 @@ public class File2Wave extends ServerResource {
 		String waveFilePath = "";
 		String scmFile = fileName;		
 		waveFilePath = filePath;
-		String command = "/Users/jinchen/Desktop/festival/festival/bin/festival -b " + 
-		"/Users/jinchen/Desktop/festival/GeneratedWave/" + scmFile;
+		String command = festivalHome + "festival -b " + wavePath + scmFile;
 		if(ExcuteCommand(command))
 		{
 			result = new FileRepresentation(waveFilePath,MediaType.AUDIO_WAV);			
@@ -98,20 +108,6 @@ public class File2Wave extends ServerResource {
 	private String GenerateUid()
 	{
 		return UUID.randomUUID().toString();
-	}
-	
-	private boolean ExcuteCommand(String[] command) 
-	{
-		boolean result = false;
-		Process p;
-		try {
-			p = Runtime.getRuntime().exec(command);
-			p.waitFor();
-			result = true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
-		return result;
 	}
 	
 	private boolean ExcuteCommand(String command) 

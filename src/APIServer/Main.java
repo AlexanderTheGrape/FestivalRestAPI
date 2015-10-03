@@ -4,7 +4,6 @@ import java.util.Timer;
 
 import org.restlet.Component;
 import org.restlet.data.Protocol;
-import Client.WaveClient;
 
 public class Main {
 	public static void main(String[] args) throws Exception {  

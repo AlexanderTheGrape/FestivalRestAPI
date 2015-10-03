@@ -1,11 +1,7 @@
 package APIServer;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
+import java.util.Properties;
 import java.util.UUID;
 import org.restlet.Request;
 import org.restlet.data.Form;
@@ -22,12 +18,27 @@ import org.restlet.resource.ServerResource;
 
 public class Text2Wave extends ServerResource{
 	String txt = "";
-	String errorWave = "/Users/jinchen/Desktop/festival/GeneratedWave/Error.wav";
+	String errorWave = "../WaveSource/Error.wav";
+	String wavePath = "";
+	String festivalHome = "";
+	
+	private void getProperties(){
+		Properties configFile = new Properties();
+		try {
+			configFile.load(getClass().getResourceAsStream("config.properties"));
+			wavePath = configFile.getProperty("waveFilePath");
+			festivalHome = configFile.getProperty("festivalHome");
+		} catch (IOException e) {
+	
+			e.printStackTrace();
+		}
+	}
 	
 	@Get
     public FileRepresentation getResource() {
+		getProperties();
 		FileRepresentation result = null;
-		Request request =getRequest();
+		Request request = getRequest();
 		Form form = request.getResourceRef().getQueryAsForm();
 		txt = form.getValues("txt");	
 		result = Process(txt);	
@@ -38,8 +49,8 @@ public class Text2Wave extends ServerResource{
 		FileRepresentation result = new FileRepresentation(errorWave,MediaType.AUDIO_WAV);
 		String waveFilePath = "";
 		String txtFile = GenerateTxtFile(txt);		
-		waveFilePath = "/Users/jinchen/Desktop/festival/GeneratedWave/" + GenerateUid() + ".wav";
-		String command = "/Users/jinchen/Desktop/festival/festival/bin/text2wave " + txtFile + " -o "  + waveFilePath;
+		waveFilePath = wavePath + GenerateUid() + ".wav";
+		String command = festivalHome + "text2wave " + txtFile + " -o "  + waveFilePath;
 		if(ExcuteCommand(command))
 		{
 			result = new FileRepresentation(waveFilePath,MediaType.AUDIO_WAV);			
@@ -57,7 +68,7 @@ public class Text2Wave extends ServerResource{
 		String fileName = "";
 		String command = "";
 		String uniqueID = GenerateUid();
-		fileName = "/Users/jinchen/Desktop/festival/GeneratedWave/" + uniqueID + ".txt";
+		fileName = wavePath + uniqueID + ".txt";
 		command = "echo " + "'" + txt + "'" + " > " + fileName;
 		String[] commandLine = {"sh", "-c", command};
 		if(ExcuteCommand(commandLine))
