@@ -21,7 +21,7 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
 public class File2Wave extends ServerResource {
-	String errorWave = "../WaveSource/Error.wav";
+	String errorWave = "./WaveSource/Error.wav";
 	String wavePath = "";
 	String festivalHome = "";
 	
