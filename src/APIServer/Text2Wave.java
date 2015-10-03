@@ -19,29 +19,34 @@ import org.restlet.resource.ServerResource;
 public class Text2Wave extends ServerResource{
 	String txt = "";
 	String errorWave = "./WaveSource/Error.wav";
-	String wavePath = "";
-	String festivalHome = "";
-	
-	private void getProperties(){
-		Properties configFile = new Properties();
-		try {
-			configFile.load(getClass().getResourceAsStream("config.properties"));
-			wavePath = configFile.getProperty("waveFilePath");
-			festivalHome = configFile.getProperty("festivalHome");
-		} catch (IOException e) {
-	
-			e.printStackTrace();
-		}
-	}
+	String noAuthorityWave = "./WaveSource/noAuthority.wav";
+	String wavePath = Main.wavePath;
+	String festivalHome = Main.festivalHome;
+	String token = "";
 	
 	@Get
     public FileRepresentation getResource() {
-		getProperties();
+        System.out.println("handler object = " + this);
+        System.out.println("called by thread = " + Thread.currentThread());
 		FileRepresentation result = null;
 		Request request = getRequest();
 		Form form = request.getResourceRef().getQueryAsForm();
-		txt = form.getValues("txt");	
-		result = Process(txt);	
+		if(form.getValues("txt") != null)
+		{
+			txt = form.getValues("txt");
+		}	
+		if(form.getValues("token") != null)
+		{
+			token = form.getValues("token");
+		}		
+		if (token.equals(Main.token))
+		{		
+			result = Process(txt);		
+		}
+		else
+		{
+			result = new FileRepresentation(noAuthorityWave,MediaType.AUDIO_WAV);
+		}	
 		return result;
     }
 

@@ -5,12 +5,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.restlet.Response;
-import org.restlet.data.MediaType;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
-import org.restlet.resource.ResourceException;
-
 public class WaveClient {
 	public void open()
 	{

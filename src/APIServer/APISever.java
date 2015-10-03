@@ -11,7 +11,7 @@ public class APISever extends Application {
      */
     @Override
     public synchronized Restlet createInboundRoot() {
-        // Create a router Restlet that routes each call to a new instance of HelloWorldResource.
+        // Create a router Restlet that routes each call to a new instance of Resource.
         Router router = new Router(getContext());
 
         // Defines only one route

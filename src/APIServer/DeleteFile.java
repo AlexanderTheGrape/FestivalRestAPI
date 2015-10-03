@@ -21,7 +21,7 @@ public class DeleteFile extends TimerTask  {
 	        final long purgeTime = 
 	            System.currentTimeMillis() - (daysBack * 24 * 60 * 60 * 1000);
 	        for(File listFile : listFiles) {
-	            if(listFile.getName() !="Error.wav" && listFile.lastModified() < purgeTime) {
+	            if(listFile.lastModified() < purgeTime) {
 	            	listFile.delete();               
 	            }
 	        }

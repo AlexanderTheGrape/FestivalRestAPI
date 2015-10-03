@@ -22,24 +22,11 @@ import org.restlet.resource.ServerResource;
 
 public class File2Wave extends ServerResource {
 	String errorWave = "./WaveSource/Error.wav";
-	String wavePath = "";
-	String festivalHome = "";
-	
-	private void getProperties(){
-		Properties configFile = new Properties();
-		try {
-			configFile.load(getClass().getResourceAsStream("config.properties"));
-			wavePath = configFile.getProperty("waveFilePath");
-			festivalHome = configFile.getProperty("festivalHome");
-		} catch (IOException e) {
-	
-			e.printStackTrace();
-		}
-	}
+	String wavePath = Main.wavePath;
+	String festivalHome = Main.festivalHome;
 	
 	@Post
 	public FileRepresentation accept(Representation entity) throws Exception {
-		getProperties();
 		FileRepresentation result = null;
 	    if (entity != null) {
 	        if (MediaType.MULTIPART_FORM_DATA.equals(entity.getMediaType(), true)) {
