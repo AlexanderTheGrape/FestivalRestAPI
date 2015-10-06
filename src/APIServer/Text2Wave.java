@@ -1,7 +1,5 @@
 package APIServer;
 
-import java.io.IOException;
-import java.util.Properties;
 import java.util.UUID;
 import org.restlet.Request;
 import org.restlet.data.Form;
