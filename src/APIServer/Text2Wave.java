@@ -28,8 +28,6 @@ public class Text2Wave extends ServerResource{
 	
 	@Get
     public FileRepresentation getResource() {
-        System.out.println("handler object = " + this);
-        System.out.println("called by thread = " + Thread.currentThread());
 		FileRepresentation result = null;
 		Request request = getRequest();
 		Form form = request.getResourceRef().getQueryAsForm();
