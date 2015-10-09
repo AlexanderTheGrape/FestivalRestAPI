@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
@@ -57,16 +59,22 @@ public class File2Wave extends ServerResource {
 	                    while ((line = br.readLine()) != null) {
 	                        sb.append(line);
 	                    }
+	                    //Get the original file name
 	                    String waveFilePath = "";
 	                    String[] matches = sb.toString().split(" ");
 	                    String match = matches[matches.length-1]; 
 	                    waveFilePath = match.split("\"")[1];
+	                    
+	                    //Replace the original file name with unique ID
+	                    String newWaveFinePath = waveFilePath.substring(0, waveFilePath.length()-4) + GenerateUid() + ".wav";	                    
+	                    String txt = sb.toString();
+	                    txt = txt.replaceAll(waveFilePath, newWaveFinePath);
+	                    
 	                    File newFile = new File(wavePath + GenerateUid() + ".scm");
 	                    BufferedWriter out = new BufferedWriter (new FileWriter(newFile));
-	                    out.write(sb.toString());
+	                    out.write(txt);
 	                    out.close();
-	                    //result = new StringRepresentation(sb.toString(), MediaType.TEXT_PLAIN);
-	                    result = Process(newFile.getName(), waveFilePath);
+	                    result = Process(newFile.getName(), newWaveFinePath);
 	                }
 	            }
 	        } else {

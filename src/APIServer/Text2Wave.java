@@ -1,5 +1,9 @@
 package APIServer;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.UUID;
 import org.restlet.Request;
 import org.restlet.data.Form;
@@ -69,33 +73,20 @@ public class Text2Wave extends ServerResource{
 	private String GenerateTxtFile(String txt)
 	{
 		String fileName = "";
-		String command = "";
 		String uniqueID = GenerateUid();
 		fileName = wavePath + uniqueID + ".txt";
-		command = "echo " + "'" + txt + "'" + " > " + fileName;
-		String[] commandLine = {"sh", "-c", command};
-		if(ExcuteCommand(commandLine))
-		{
-			return fileName;
-		}
-		else 
-		{
-			return "";
-		}
-	}
-	
-	private boolean ExcuteCommand(String[] command) 
-	{
-		boolean result = false;
-		Process p;
+		File txtFile = new File(fileName);
+		FileWriter fw;
 		try {
-			p = Runtime.getRuntime().exec(command);
-			p.waitFor();
-			result = true;
-		} catch (Exception e) {
+			fw = new FileWriter(txtFile.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(txt);
+			bw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
-		return result;
+		}
+		return fileName;
 	}
 	
 	private boolean ExcuteCommand(String command) 
