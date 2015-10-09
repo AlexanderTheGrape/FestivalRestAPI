@@ -9,6 +9,7 @@ import org.restlet.Component;
 import org.restlet.data.Protocol;
 
 public class Main {
+	static Integer port = 8183;
 	static String wavePath = "";
 	static String festivalHome = "";
 	static String token = "";
@@ -16,10 +17,10 @@ public class Main {
 	public static void main(String[] args) throws Exception {  		
 		getProperties(args[0]);
 	    // Create a new Component.  
-	    Component component = new Component();  
+	    Component component = new Component(); 
 
-	    // Add a new HTTP server listening on port 8183.  
-	    component.getServers().add(Protocol.HTTP, 8183);  
+	    // Add a new HTTP server listening on port configured, the default port is 8183.  
+	    component.getServers().add(Protocol.HTTP, port);  
 
 	    // Attach the application.  
 	    component.getDefaultHost().attach("/api",  
@@ -46,6 +47,7 @@ public class Main {
 			file = new FileInputStream(configFilePath);
 			configFile.load(file);
 			file.close();
+			port = Integer.parseInt(configFile.getProperty("port"));
 			wavePath = configFile.getProperty("waveFilePath");
 			festivalHome = configFile.getProperty("festivalHome");
 			token = configFile.getProperty("APIToken");
