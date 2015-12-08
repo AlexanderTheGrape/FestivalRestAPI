@@ -1,5 +1,6 @@
 package APIServer;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -16,6 +17,17 @@ public class Main {
 	
 	public static void main(String[] args) throws Exception {  		
 		getProperties(args[0]);
+		
+		// Initiate temporary folder for keeping auto generated files
+		File folder = new File(wavePath);
+		try {
+			   if (!(folder.isDirectory())) {
+			    new File(wavePath).mkdir();
+			   }
+			  } catch (SecurityException e) {
+			   e.printStackTrace();
+			  }
+		
 	    // Create a new Component.  
 	    Component component = new Component(); 
 
@@ -24,19 +36,14 @@ public class Main {
 
 	    // Attach the application.  
 	    component.getDefaultHost().attach("/api",  
-	            new APISever());  
+	            new APIServer());  
 
 	    // Start the component.  
 	    component.start();	
 	    
-	    //Delete auto generated .txt and .wav files every 1 hour
+	    //Delete auto generated .txt and .wav files every 10 minutes
 	    Timer time = new Timer(); 
-	    time.schedule(new DeleteFile(1, wavePath), 0, 1000 * 60 * 60 * 1);
-	    
-	    //test Client
-   
-		//WaveClient waveClient = new WaveClient();
-		//waveClient.open();	*/
+	    time.schedule(new DeleteFile(1, wavePath), 0, 1000 * 60 * 10);	   
 	   
 	} 
 	
