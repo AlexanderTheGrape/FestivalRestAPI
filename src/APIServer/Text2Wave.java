@@ -21,15 +21,15 @@ import org.restlet.resource.ServerResource;
 
 public class Text2Wave extends ServerResource{
 	String txt = "";
-	String errorWave = "./WaveSource/Error.wav";
-	String noAuthorityWave = "./WaveSource/noAuthority.wav";
+	String errorWave = "Error.wav";
+	String noAuthorityWave = "noAuthority.wav";
 	String wavePath = Main.wavePath;
 	String festivalHome = Main.festivalHome;
 	String token = "";
 	
 	@Get
     public FileRepresentation getResource() {
-		FileRepresentation result = null;
+		FileRepresentation result = new FileRepresentation(errorWave,MediaType.AUDIO_WAV);
 		Request request = getRequest();
 		Form form = request.getResourceRef().getQueryAsForm();
 		System.out.println(form.toString());
@@ -44,19 +44,20 @@ public class Text2Wave extends ServerResource{
 		if(form.getValues("token") != null)
 		{
 			token = form.getValues("token");
+			if (token.equals(Main.token))
+			{		
+				result = Process(txt);		
+			}
+			else
+			{
+				result = new FileRepresentation(noAuthorityWave,MediaType.AUDIO_WAV);
+			}	
 		}
 		else
 		{
 			System.out.println("query string token is null");
-		}
-		if (token.equals(Main.token))
-		{		
-			result = Process(txt);		
-		}
-		else
-		{
 			result = new FileRepresentation(noAuthorityWave,MediaType.AUDIO_WAV);
-		}	
+		}		
 		return result; 
     }
 
@@ -125,5 +126,3 @@ public class Text2Wave extends ServerResource{
 	}
 	
 }
-
-
