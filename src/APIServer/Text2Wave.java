@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.UUID;
+
 import org.restlet.Request;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -31,14 +32,23 @@ public class Text2Wave extends ServerResource{
 		FileRepresentation result = null;
 		Request request = getRequest();
 		Form form = request.getResourceRef().getQueryAsForm();
+		System.out.println(form.toString());
 		if(form.getValues("txt") != null)
 		{
 			txt = form.getValues("txt");
-		}	
+		}
+		else
+		{
+			System.out.println("query string txt is null");
+		}
 		if(form.getValues("token") != null)
 		{
 			token = form.getValues("token");
-		}		
+		}
+		else
+		{
+			System.out.println("query string token is null");
+		}
 		if (token.equals(Main.token))
 		{		
 			result = Process(txt);		
@@ -47,7 +57,7 @@ public class Text2Wave extends ServerResource{
 		{
 			result = new FileRepresentation(noAuthorityWave,MediaType.AUDIO_WAV);
 		}	
-		return result;
+		return result; 
     }
 
 	private FileRepresentation Process(String txt){		
@@ -55,10 +65,14 @@ public class Text2Wave extends ServerResource{
 		String waveFilePath = "";
 		String txtFile = GenerateTxtFile(txt);		
 		waveFilePath = wavePath + GenerateUid() + ".wav";
-		String command = festivalHome + "text2wave " + txtFile + " -o "  + waveFilePath;
-		if(ExcuteCommand(command))
+		String[] Command = {"/bin/sh", "-c", "cd " + festivalHome +"; ./" + "text2wave " + txtFile + " -o "  + waveFilePath};
+		if(ExcuteCommand(Command))
 		{
-			result = new FileRepresentation(waveFilePath,MediaType.AUDIO_WAV);			
+			result = new FileRepresentation(waveFilePath,MediaType.AUDIO_WAV);		
+		}
+		else
+		{
+			System.out.println("Generate wav file error");	
 		}
 		return result;
 	}
@@ -73,21 +87,30 @@ public class Text2Wave extends ServerResource{
 		String fileName = "";
 		String uniqueID = GenerateUid();
 		fileName = wavePath + uniqueID + ".txt";
-		File txtFile = new File(fileName);
-		FileWriter fw;
 		try {
+			File txtFile = new File(fileName);
+			FileWriter fw;
+
 			fw = new FileWriter(txtFile.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(txt);
 			bw.close();
+			
+			if (!txtFile.exists()){
+				System.out.println("Generate txt file error");	
+			}
+				
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}  catch (SecurityException e) {
+			   e.printStackTrace();
+			  }
+
 		return fileName;
 	}
 	
-	private boolean ExcuteCommand(String command) 
+	private boolean ExcuteCommand(String[] command) 
 	{
 		boolean result = false;
 		Process p;
@@ -100,4 +123,7 @@ public class Text2Wave extends ServerResource{
 		}		
 		return result;
 	}
+	
 }
+
+
