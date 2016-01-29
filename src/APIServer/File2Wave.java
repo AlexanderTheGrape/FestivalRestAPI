@@ -4,17 +4,22 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.UUID;
 
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.restlet.Request;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.ext.fileupload.RestletFileUpload;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
+import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
@@ -22,6 +27,12 @@ public class File2Wave extends ServerResource {
 	String errorWave = "./WaveSource/Error.wav";
 	String wavePath = Main.wavePath;
 	String festivalHome = Main.festivalHome;
+	
+	@Get
+	public FileRepresentation getResource() throws IOException {
+		FileRepresentation result = new FileRepresentation(getLatestFilefromDir(wavePath),MediaType.AUDIO_WAV);		
+		return result; 
+    }
 	
 	@Post
 	public FileRepresentation accept(Representation entity) throws Exception {
@@ -113,5 +124,22 @@ public class File2Wave extends ServerResource {
 			e.printStackTrace();
 		}		
 		return result;
+	}
+	
+	private File getLatestFilefromDir(String dirPath) throws IOException{
+	    File dir = new File(dirPath);
+	    File[] files = dir.listFiles();
+	    if (files == null || files.length == 0) {
+	        return null;
+	    }
+
+	    File lastModifiedFile = files[0];
+	    for (int i = 1; i < files.length; i++) {
+	       if (lastModifiedFile.lastModified() < files[i].lastModified() && files[i].getName().toLowerCase().endsWith(".wav")) {
+	           lastModifiedFile = files[i];
+	       }
+	    }
+	    	return lastModifiedFile;
+
 	}
 }

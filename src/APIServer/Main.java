@@ -9,8 +9,10 @@ import java.util.Timer;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 
+import TestClient.TestTxt2Wave;
+
 public class Main {
-	static Integer port = 8183;
+	public static Integer port = 8183;
 	static String wavePath = "";
 	static String festivalHome = "";
 	static String token = "";
@@ -41,10 +43,13 @@ public class Main {
 	    // Start the component.  
 	    component.start();	
 	    
-	    //Delete auto generated .txt and .wav files every 10 minutes
+	    //Delete auto generated .txt and .wav files every 1 hour
 	    Timer time = new Timer(); 
-	    time.schedule(new DeleteFile(1, wavePath), 0, 1000 * 60 * 10);	   
+	    time.schedule(new DeleteFile(1, wavePath), 0, 1000 * 60 * 60 * 1);	   
 	   
+	    //test client
+	    TestTxt2Wave test = new TestTxt2Wave();
+	    //test.testClient();
 	} 
 	
 	private static void getProperties(String configFilePath){
